@@ -22,8 +22,16 @@ struct connection_t{
     int mutualFriends = 0;
 };
 
-bool compareMutualFriends(const connection_t &a, const connection_t &b)
-{
+struct friend_t {
+    int id;
+    int numOccurences = 0;
+};
+
+bool compareNumOccurences(const friend_t &a, const friend_t &b) {
+    return a.numOccurences > b.numOccurences;
+}
+
+bool compareMutualFriends(const connection_t &a, const connection_t &b) {
     return a.mutualFriends > b.mutualFriends;
 }
 
@@ -112,6 +120,15 @@ bool binarySearch(int key, const vector<int>& b) {
         if(b.at(middle) > key)
         {
             high = middle - 1;
+        }
+    }
+    return false;
+}
+
+bool binarySearch(int key, const vector<friend_t>& b) {
+    for (int i = 0; i < b.size(); i++) {
+        if (key == b.at(i).id) {
+            return true;
         }
     }
     return false;
@@ -236,18 +253,56 @@ void TopMutualFriends(MyGraph& g, int k, int N) {
 
 	sort(listOfSuggestedFriends.begin(), listOfSuggestedFriends.end());
 
-    for (int i = 0; i < listOfSuggestedFriends.size(); ++i) {
-        cout << listOfSuggestedFriends.at(i) << endl;
+	vector<friend_t> suggestedConnections;
+    suggestedConnections.resize(listOfSuggestedFriends.size());
+
+    int i = 0;
+    int j = 0;
+    int l = 0;
+
+    while (i < listOfSuggestedFriends.size()) {
+		if (!binarySearch(listOfSuggestedFriends.at(i), suggestedConnections)) {
+			suggestedConnections.at(j).id = listOfSuggestedFriends.at(i);
+			suggestedConnections.at(j).numOccurences++;
+            l = j;
+            j++;
+		} else {
+			suggestedConnections.at(l).numOccurences++;
+		}
+        i++;
     }
 
+    suggestedConnections.resize(j);
+    sort(suggestedConnections.begin(), suggestedConnections.end(), compareNumOccurences);
+
+    if (N > suggestedConnections.size()) {
+        if (suggestedConnections.size() == 1) {
+            cout << k << " only has " << suggestedConnections.size() << " second tier connection." << endl;
+            cout << "(S)He is:" << endl;
+        } else {
+            cout << k << " only has " << suggestedConnections.size() << " second tier connections." << endl;
+            cout << k << "'s top " << suggestedConnections.size() << " second tier connections are:" << endl;
+        }
+        N = suggestedConnections.size();
+    } else {
+        if (N == 1) {
+            cout << k << "'s recommended friend is:" << endl;
+        } else {
+            cout << k << "'s top " << N << " recommended friends are:" << endl;
+        }
+    }
+
+    for (int i = 0; i < N; ++i) {
+	    cout << suggestedConnections.at(i).id << endl;
+    }
 }
 
 int main() {
-    ifstream ifs("facebook_combined.txt");
+    ifstream ifs("suggest_friends.txt");
     MyGraph g;
     populateNetwork(g, ifs);
-    int k = 6;
-	int N = 2;
+    int k = 5;
+	int N = 4;
 
     if (!findvertex(g, k)) {
         cout << k << " is not in the network." << endl;
