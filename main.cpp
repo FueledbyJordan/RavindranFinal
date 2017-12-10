@@ -13,7 +13,7 @@ typedef boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS> MyG
 typedef boost::graph_traits<MyGraph>::vertex_descriptor MyVertex;
 typedef boost::graph_traits <MyGraph>::adjacency_iterator adjacency_iterator;
 typedef boost::property_map<MyGraph, boost::vertex_index_t>::type IndexMap;
-using VertexItr = boost::graph_traits<MyGraph>::vertex_iterator; // Define Vertex iterator
+typedef boost::graph_traits<MyGraph>::vertex_iterator VertexItr;
 
 struct connection_t{
     int id;
@@ -171,13 +171,12 @@ void topNFriends(MyGraph& g, int k, int N) {
     }
 }
 
-
 int main() {
-    ifstream ifs("sample_edges.txt");
+    ifstream ifs("facebook_combined.txt");
     MyGraph g;
     populateNetwork(g, ifs);
     int k = 0;
-	int N = 3;
+	int N = 20;
 
     if (!findvertex(g, k)) {
         cout << k << " is not in the network." << endl;
