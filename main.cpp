@@ -272,7 +272,16 @@ void TopMutualFriends(MyGraph& g, int k, int N) {
         i++;
     }
 
+    int numZeros = suggestedConnections.size() - j - 1;
+
     suggestedConnections.resize(j);
+
+    friend_t fixedZero;
+    fixedZero.id = 0;
+    fixedZero.numOccurences = numZeros;
+
+    suggestedConnections.emplace_back(fixedZero);
+
     sort(suggestedConnections.begin(), suggestedConnections.end(), compareNumOccurences);
 
     if (N > suggestedConnections.size()) {
