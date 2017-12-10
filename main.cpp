@@ -224,27 +224,29 @@ void TopMutualFriends(MyGraph& g, int k, int N) {
     friendNot.erase(find(friendNot.begin(), friendNot.end(), k));
     vector<vector<int>> resultSet;
 	resultSet.resize(kFriendsOfFriends.size());
+    vector<int> listOfSuggestedFriends;
 
 	for(int i = 0; i < kFriendsOfFriends.size(); i++) {
 		resultSet.at(i) = intersection(kFriendsOfFriends.at(i), friendNot);
 	}
 
-    cout << "Result Set:" << endl;
     for (int i = 0; i < resultSet.size(); i++) {
-        cout << kFriends.at(i) << ":\t";
-        for (int j = 0; j < resultSet.at(i).size(); j++) {
-            cout << resultSet.at(i).at(j) << " ";
-        }
-        cout << endl;
+        listOfSuggestedFriends.insert(listOfSuggestedFriends.end(), resultSet.at(i).begin(), resultSet.at(i).end());
+    }
+
+	sort(listOfSuggestedFriends.begin(), listOfSuggestedFriends.end());
+
+    for (int i = 0; i < listOfSuggestedFriends.size(); ++i) {
+        cout << listOfSuggestedFriends.at(i) << endl;
     }
 
 }
 
 int main() {
-    ifstream ifs("suggest_friends.txt");
+    ifstream ifs("facebook_combined.txt");
     MyGraph g;
     populateNetwork(g, ifs);
-    int k = 0;
+    int k = 6;
 	int N = 2;
 
     if (!findvertex(g, k)) {
