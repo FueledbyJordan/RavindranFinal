@@ -18,10 +18,12 @@ using VertexItr = boost::graph_traits<MyGraph>::vertex_iterator; // Define Verte
 struct connection_t{
     int id;
     int mutualFriends = 0;
-    bool operator()(const int & c) const {
-        return id == c;
-    }
 };
+
+bool compareMutualFriends(const connection_t &a, const connection_t &b)
+{
+    return a.mutualFriends > b.mutualFriends;
+}
 
 bool findvertex(const MyGraph& g, int k){
     VertexItr vi, vi_end;
@@ -80,26 +82,107 @@ vector<vector<int>> friendsOfFriends(const MyGraph& g, vector<int>& v) {
         fOfF.push_back(findFriends(g, *it));
     }
 
-    return fOF;
+    return fOfF;
 }
 
-bool compareMutualFriends(const connection_t &a, const connection_t &b)
+bool binarySearch(int key, const vector<int>& b)
 {
-    return a.mutualFriends > b.mutualFriends;
+    int low = 0;
+    int high = b.size() - 1;
+    while(high >= low)
+    {
+        int middle = (low + high) / 2;
+        if(b.at(middle) == key)
+        {
+            return true;
+        }
+        if(b.at(middle) < key)
+        {
+            low = middle + 1;
+        }
+        if(b.at(middle) > key)
+        {
+            high = middle - 1;
+        }
+    }
+    return false;
 }
+
+int intersection(const vector<int>&a, const vector<int>& b)
+{
+    vector<int> result;
+    for (int i = 0; i < a.size(); i++)
+    {
+        if (binarySearch(a.at(i), b))
+        {
+            result.emplace_back(a.at(i));
+        }
+    }
+
+    vector<int>::iterator it;
+    it = unique(result.begin(), result.end());
+    result.resize(distance(result.begin(), it));
+
+    return result.size();
+}
+
+vector<connection_t> sortedFriends(const vector<int>& KsFriends, const vector<vector<int>>& friendsFriends){
+    vector<connection_t> KsNetwork;
+    KsNetwork.resize(KsFriends.size());
+    for (int i = 0; i < KsFriends.size(); ++i) {
+        KsNetwork.at(i).id = KsFriends.at(i);
+        KsNetwork.at(i).mutualFriends = intersection(friendsFriends.at(i), KsFriends);
+    }
+
+    sort(KsNetwork.begin(), KsNetwork.end(), compareMutualFriends);
+
+    return KsNetwork;
+
+}
+
+void topNFriends(MyGraph& g, int k, int N) {
+    if (N < 0) {
+        cout << "N must be a positive integer" << endl;
+        exit(EXIT_SUCCESS);
+    }
+    vector<int> kFriends = findFriends(g, k);
+    vector<vector<int>> kFriendsOfFriends = friendsOfFriends(g, kFriends);
+    vector<connection_t> ksortedFriends = sortedFriends(kFriends, kFriendsOfFriends);
+
+    if (N > ksortedFriends.size()) {
+        if (ksortedFriends.size() == 1) {
+            cout << k << " only has " << ksortedFriends.size() << " friend." << endl;
+            cout << "(S)He is:" << endl;
+        } else {
+            cout << k << " only has " << ksortedFriends.size() << " friends." << endl;
+            cout << k << "'s top " << ksortedFriends.size() << " friends are:" << endl;
+        }
+        N = ksortedFriends.size();
+    } else {
+        if (N == 1) {
+            cout << k << "'s top friend is:" << endl;
+        } else {
+            cout << k << "'s top " << N << " friends are:" << endl;
+        }
+    }
+
+    for (int i = 0; i < N; ++i) {
+	    cout << ksortedFriends.at(i).id << endl;
+    }
+}
+
 
 int main() {
     ifstream ifs("sample_edges.txt");
     MyGraph g;
     populateNetwork(g, ifs);
     int k = 0;
+	int N = 3;
 
     if (!findvertex(g, k)) {
         cout << k << " is not in the network." << endl;
         exit(EXIT_SUCCESS);
     }
 
-    vector<int> output = findFriends(g, k);
-    vector<vector<int>> t = friendsOfFriends(g, output);
-
+	topNFriends(g, k, N);
 }
