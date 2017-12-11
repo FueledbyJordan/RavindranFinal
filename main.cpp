@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 #include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -182,7 +184,7 @@ bool binarySearch(int key, const vector<int>& b) {
 	@param b vector to search
 	@retrun true if key exists in b
 */
-bool binarySearch(int key, const vector<friend_t>& b) {
+bool linearSearch(int key, const vector<friend_t>& b) {
     for (int i = 0; i < b.size(); i++) {
         if (key == b.at(i).id) {
             return true;
@@ -352,7 +354,7 @@ void TopMutualFriends(MyGraph& g, int k, int N) {
     int l = 0;
 
     while (i < listOfSuggestedFriends.size()) {
-		if (!binarySearch(listOfSuggestedFriends.at(i), suggestedConnections)) {
+		if (!linearSearch(listOfSuggestedFriends.at(i), suggestedConnections)) {
 			suggestedConnections.at(j).id = listOfSuggestedFriends.at(i);
 			suggestedConnections.at(j).numOccurences++;
             l = j;
@@ -398,16 +400,27 @@ void TopMutualFriends(MyGraph& g, int k, int N) {
 }
 
 int main() {
-    ifstream ifs("suggest_friends.txt");
+    ifstream ifs("facebook_combined.txt");
     MyGraph g;
     populateNetwork(g, ifs);
-    int k = 5;
-	int N = 4;
+
+    int k = 946;
+	int N = 20;
 
     if (!findvertex(g, k)) {
         cout << k << " is not in the network." << endl;
         exit(EXIT_SUCCESS);
     }
-	//topNFriends(g, k, N);
-    TopMutualFriends(g, k, N);
+
+    struct timeval start, end;
+
+    gettimeofday(&start, 0);
+
+    topNFriends(g, k, N);
+    //TopMutualFriends(g, k, N);
+
+    gettimeofday(&end, 0);
+    cout << endl;
+    cout << (end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)<< " us" << endl;
+
 }
