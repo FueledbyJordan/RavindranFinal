@@ -1,3 +1,9 @@
+/**
+* Project: ECGR 3090 Final
+* Authors: Danny Murray, John Humphries
+* Date: 12/10/2017
+*/
+
 #include <fstream>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/depth_first_search.hpp>
