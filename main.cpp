@@ -15,26 +15,55 @@ typedef boost::graph_traits <MyGraph>::adjacency_iterator adjacency_iterator;
 typedef boost::property_map<MyGraph, boost::vertex_index_t>::type IndexMap;
 typedef boost::graph_traits<MyGraph>::vertex_iterator VertexItr;
 
+/**
+	vector of all members of the graph
+*/
 vector<int> everyone;
 
+/**
+	@param id the identifier for vertex
+	@param mutualFriends the number of friends shared
+*/
 struct connection_t{
     int id;
     int mutualFriends = 0;
 };
 
+/**
+	@param id the identifier for vertex
+	@param numOccurences the number of times friend is mutual
+*/
 struct friend_t {
     int id;
     int numOccurences = 0;
 };
 
+/**
+	Comparator for friend_t.
+ 	@param a vector to compare
+	@param b vector to compare
+	@return true if a.numOccurences is greater than b.numOccurences
+*/
 bool compareNumOccurences(const friend_t &a, const friend_t &b) {
     return a.numOccurences > b.numOccurences;
 }
 
+/**
+	Comparator for connection_t.
+	@param a vector to compare
+	@param b vector to compare
+	@return true if a.mutualFriends is greater than b.mutualFriends
+*/
 bool compareMutualFriends(const connection_t &a, const connection_t &b) {
     return a.mutualFriends > b.mutualFriends;
 }
 
+/**
+	Finds a vertex in the graph.
+	@param g graph to search
+	@param k vertex to find
+	@return true if k exists in g
+*/
 bool findvertex(const MyGraph& g, int k){
     VertexItr vi, vi_end;
     boost::tie(vi, vi_end) = boost::vertices(g);
@@ -46,6 +75,11 @@ bool findvertex(const MyGraph& g, int k){
     return false;
 }
 
+/**
+	Populate the graph with vertices and edges.
+ 	@param g graph to populate
+	@param ifs file to extract data
+*/
 void populateNetwork(MyGraph& g, ifstream& ifs) {
     string line;
     string first;
@@ -78,6 +112,12 @@ void populateNetwork(MyGraph& g, ifstream& ifs) {
 
 }
 
+/**
+	Find all vertices that share an edge with a given vertex.
+	@param g graph to search
+	@param k root vertex
+	@return vector of verticies that share an edge with k
+*/
 vector<int> findFriends(const MyGraph& g, const int& k) {
     vector<int> friends;
 
@@ -92,7 +132,12 @@ vector<int> findFriends(const MyGraph& g, const int& k) {
     return friends;
 }
 
-
+/**
+	Find all verticies that share an edge with vertices in a vector.
+	@param g graph to search
+	@param v vertex of vertices
+	@return vector of vectors that contain verticies with shared edges
+*/
 vector<vector<int>> friendsOfFriends(const MyGraph& g, vector<int>& v) {
 	vector<vector<int>> fOfF;
 
@@ -103,6 +148,12 @@ vector<vector<int>> friendsOfFriends(const MyGraph& g, vector<int>& v) {
     return fOfF;
 }
 
+/**
+	Search sorted vector for a value. O(logn).
+	@param key value to search for
+	@param b vector to search
+	@retrun true if key exists in b
+*/
 bool binarySearch(int key, const vector<int>& b) {
     int low = 0;
     int high = b.size() - 1;
@@ -125,6 +176,12 @@ bool binarySearch(int key, const vector<int>& b) {
     return false;
 }
 
+/**
+	Search sorted vector of type friend_t for a value.
+	@param key value to search for
+	@param b vector to search
+	@retrun true if key exists in b
+*/
 bool binarySearch(int key, const vector<friend_t>& b) {
     for (int i = 0; i < b.size(); i++) {
         if (key == b.at(i).id) {
@@ -134,6 +191,12 @@ bool binarySearch(int key, const vector<friend_t>& b) {
     return false;
 }
 
+/**
+	Count the number of shared values between two vectors.
+	@param a vector to compare
+	@param b vector to compare
+	@return size of vector containing shared values
+*/
 int countIntersection(const vector<int>&a, const vector<int>& b) {
     vector<int> result;
     for (int i = 0; i < a.size(); i++)
@@ -151,6 +214,12 @@ int countIntersection(const vector<int>&a, const vector<int>& b) {
     return result.size();
 }
 
+/**
+	Find shared values between two vectors.
+	@param a vector to compare
+	@param b vector to compare
+	@return vector containing shared values
+*/
 vector<int> intersection(const vector<int>&a, const vector<int>& b) {
     vector<int> result;
     for (int i = 0; i < a.size(); i++)
@@ -168,6 +237,12 @@ vector<int> intersection(const vector<int>&a, const vector<int>& b) {
     return result;
 }
 
+/**
+	Sort vector of verticies by number of edges in common.
+	@param KsFriends vector of verticies to sort
+	@param friendsFriends vector of vectors of vertices to check for common edges
+	@return sorted vector of type connection_t
+*/
 vector<connection_t> sortedFriends(const vector<int>& KsFriends, const vector<vector<int>>& friendsFriends){
     vector<connection_t> KsNetwork;
     KsNetwork.resize(KsFriends.size());
@@ -182,6 +257,12 @@ vector<connection_t> sortedFriends(const vector<int>& KsFriends, const vector<ve
 
 }
 
+/**
+	Find the top N friends of a vertex.
+	@param g graph to search
+	@param k root vertex
+	@param N number of top friends to identify
+*/
 void topNFriends(MyGraph& g, int k, int N) {
     if (N < 0) {
         cout << "N must be a positive integer" << endl;
@@ -213,6 +294,11 @@ void topNFriends(MyGraph& g, int k, int N) {
     }
 }
 
+/**
+	Find all verticies that are not friends of a vertex.
+	@param vector of friends
+	@return vector of verticies that do not share an edge with root vertex
+*/
 vector<int> notFriends(const vector<int>& friends) {
     vector<int> result;
     for (int i = 0; i < everyone.size(); i++)
@@ -229,7 +315,12 @@ vector<int> notFriends(const vector<int>& friends) {
 
     return result;
 }
-
+/**
+	Suggest M new friends of a given vertex.
+	@param g graph to search
+	@param k root vertex
+	@param N number of friends to suggest
+*/
 void TopMutualFriends(MyGraph& g, int k, int N) {
     if (N < 0) {
         cout << "N must be a positive integer" << endl;
