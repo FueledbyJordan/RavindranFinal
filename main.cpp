@@ -405,6 +405,7 @@ int main() {
     populateNetwork(g, ifs);
 
     int k = 946;
+    int M = 15;
 	int N = 20;
 
     if (!findvertex(g, k)) {
@@ -417,10 +418,12 @@ int main() {
     gettimeofday(&start, 0);
 
     topNFriends(g, k, N);
-    //TopMutualFriends(g, k, N);
+    cout << endl;
+    TopMutualFriends(g, k, M);
 
     gettimeofday(&end, 0);
     cout << endl;
+    cout << "Total time elapsed:\t";
     cout << (end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)<< " us" << endl;
 
 }
