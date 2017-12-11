@@ -9,6 +9,8 @@ find the top N friends of a given user. The second task was to suggest
 M new mutual friends given a specific user. The algorithms used to complete
 these tasks are described below.
 
+_Note: This project should be compiled using Boost version 1.58.0.1 or greater._
+
 ##### Top N Friends
 1. Find friends of the user
 2. Find friends of friends
@@ -24,4 +26,4 @@ these tasks are described below.
 3. Find every user who is not a friend
 4. Find intersection of notFriends and friends of friends
 5. Sort intersections from step 4 in descending order by number of occurrences
-6. Find top M suggestions from occurrences 
+6. Find top M suggestions from occurrences
